@@ -1,19 +1,12 @@
-import express from "express"
+import express from "express";
 import globalErrorHandler from "./middlewares/globalErrorHandler";
-import createHttpError from "http-errors";
+import usersRoute from "./routes/usersRoute"
 
 const app = express();
+app.use(express.json())
 
-app.get("/",(req,res)=>{
+app.use("/api/users",usersRoute)
 
-    const error = createHttpError(400,"something went wrong!")
-    throw error;
-    
-    res.json({
-        "message":"Hello from home"
-    })
-})
-
-app.use(globalErrorHandler)
+app.use(globalErrorHandler);
 
 export default app;

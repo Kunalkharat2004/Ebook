@@ -1,6 +1,8 @@
 import mongoose, {Schema} from "mongoose"
+import { IUser } from "../utils/userTypes";
 
-const userSchema = new Schema({
+
+const userSchema = new Schema<IUser>({
     email:{
         type:String,
         required: true,

@@ -14,8 +14,6 @@ router.post(
 
 router.post(
     "/login",
-    validateUserCredentials,
-    validateRequest,
     userController.loginUser
 )
 export default router

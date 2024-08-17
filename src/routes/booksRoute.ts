@@ -8,7 +8,7 @@ const router = Router()
 const dest = path.resolve(__dirname,"../../public/data/uploads");
 const upload = multer({
   dest:dest,
-  limits:{fileSize:3e7}
+  limits:{fileSize: 10 * 1024 * 1024}
 })
 
 router.post("/",upload.fields([

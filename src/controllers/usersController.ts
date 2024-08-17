@@ -60,7 +60,7 @@ export const userController = {
         {sub:user._id,email:user.email},
         config.jwtSecret as string,
         {   algorithm:"HS256",
-            expiresIn:"1m"
+            expiresIn:"1h"
         }
     )
     res.json({ 

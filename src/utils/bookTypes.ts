@@ -1,15 +1,9 @@
-import { IUser } from "./userTypes";
+import { Document, Types } from "mongoose";
 
-
-interface IBooks{
-    _id:string,
-    title: string,
-    genre:string,
-    coverImage:string,
-    author:IUser,
-    file:string,
-    createdAt:Date,
-    updatedAt:Date
+export interface IBook extends Document {
+  title: string;
+  genre: string;
+  coverImage: string;
+  author: Types.ObjectId; // or 'mongoose.Schema.Types.ObjectId'
+  file: string;
 }
-
-export default IBooks;

@@ -17,6 +17,15 @@ router.post("/",
   upload.fields([
     {name:"coverImage",maxCount:1},
     {name:"file",maxCount:1}
-]),booksController.createBooks)
+]),booksController.createBook)
+
+router.put("/:id",
+  authentication,
+  upload.fields([
+    {name:"coverImage",maxCount:1},
+    {name:"file",maxCount:1}
+  ]),
+  booksController.updateBook
+)
 
 export default router;

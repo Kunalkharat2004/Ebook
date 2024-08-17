@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import createHttpError from "http-errors";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { config } from "../config/config";
 
 export interface AuthRequest extends Request {
@@ -23,9 +23,14 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
         next();
         
     } catch (err) {
-        console.error("JWT token verification failed",err);
-        return next(createHttpError(401, "Invalid token"));
+        if(err instanceof TokenExpiredError){
+            console.error("JWT token has been expired!",err);
+            return next(createHttpError(401,"JWT token has been expired!"))
+        }
+        else{
+            console.error("JWT token verification failed",err);
+            return next(createHttpError(401, "Invalid token"));
+        }
     }
 
-  
 };

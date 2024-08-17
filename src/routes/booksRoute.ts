@@ -2,6 +2,7 @@ import { Router } from "express";
 import booksController from "../controllers/booksController";
 import path from "path";
 import multer from "multer";
+import {authentication} from "../middlewares/authentication";
 
 const router = Router()
 
@@ -11,7 +12,9 @@ const upload = multer({
   limits:{fileSize: 10 * 1024 * 1024}
 })
 
-router.post("/",upload.fields([
+router.post("/",
+    authentication,
+  upload.fields([
     {name:"coverImage",maxCount:1},
     {name:"file",maxCount:1}
 ]),booksController.createBooks)

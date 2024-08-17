@@ -59,9 +59,11 @@ export const userController = {
        const token = sign(
         {sub:user._id,email:user.email},
         config.jwtSecret as string,
-        {expiresIn:"1h"}
+        {   algorithm:"HS256",
+            expiresIn:"1h"
+        }
     )
-    res.send({ token, message: 'Login successful' });
+    res.json({ access_token:token, message: 'Login successful' });
         }catch(err){
             next(err);
         }

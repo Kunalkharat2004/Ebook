@@ -4,13 +4,14 @@ import cloudinary from "../config/cloudinary";
 import createHttpError from "http-errors";
 import Books from "../models/bookModel";
 import fs from "fs"
+import { AuthRequest } from "../middlewares/authentication";
 
 const booksController = {
 
     createBooks:async(req:Request,res:Response,next:NextFunction)=>{
       // console.log(req.files);
       const {genre,title} = req.body;
-
+      
       try{
 
         const files = req.files as {[fieldname: string]:Express.Multer.File[]}
@@ -61,12 +62,13 @@ const booksController = {
 
         // Store books information in database
         try{
+            const _req = req as AuthRequest
             const newBook = new Books({
               title,
               genre,
               coverImage: coverImgUploadResult.secure_url,
               file: bookUploadResult.secure_url,
-              author:"66bf7f55f80a45c21d3415d6"
+              author: _req.userID
             })
 
             await newBook.save()

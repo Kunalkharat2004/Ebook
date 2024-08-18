@@ -28,4 +28,10 @@ router.put("/:id",
   booksController.updateBook
 )
 
+// Get Single book
+router.get("/:id",booksController.singleBook)
+
+// Get list of books
+router.get("/",booksController.listBook);
+
 export default router;

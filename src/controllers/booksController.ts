@@ -5,6 +5,7 @@ import { AuthRequest } from "../middlewares/authentication";
 import uploadFileToCloudinary from "../utils/booksUtility/cloudinaryUploads";
 import extractFileInfo from "../utils/booksUtility/extractFileInfo";
 import storeBookInDB from "../utils/booksUtility/storeBookInDB";
+import cloudinary from "../config/cloudinary";
 
 const booksController = {
 
@@ -63,15 +64,40 @@ const booksController = {
         let coverImgUrl="",bookUrl=""
         if(files.coverImage){
 
+          const previousBookSplit = book.coverImage.split("/").slice(-2);
+          const previousBookID = previousBookSplit.at(-2)+"/"+(previousBookSplit.at(-1)?.split(".").at(-2))
+          
           // Extract coverImage info
           const coverImageInfo = extractFileInfo(files,"coverImage","books-cover")
           // Upload to cloud
           const coverImgUploadResult = await uploadFileToCloudinary(coverImageInfo.filePath,coverImageInfo.fileName,coverImageInfo.fileFormat,coverImageInfo.folder);
 
+          // Delete the old file from cloudinary
+          try{
+              await cloudinary.uploader.destroy(previousBookID);
+          }catch(err){
+                console.error("Error occured while deleting the previous cover",err);
+               return next(createHttpError(500,"Error occured while deleting the previous cover"))
+          }
+
           coverImgUrl = coverImgUploadResult.secure_url
         }
 
         if (files.file) {
+
+          const previousFileSplit = book.file.split("/").slice(-2);
+          const previousFileID = previousFileSplit.at(-2)+"/"+(previousFileSplit.at(-1))
+          
+           // Delete the old file from cloudinary
+           try{
+            await cloudinary.uploader.destroy(previousFileID,{
+              resource_type:"raw"
+            });
+        }catch(err){
+              console.error("Error occured while deleting the previous pdf file",err);
+             return next(createHttpError(500,"Error occured while deleting the previous pdf file"))
+        }
+          
 
           // Extract file info
           const bookInfo = extractFileInfo(files, "file", "books-pdfs");
@@ -102,8 +128,39 @@ const booksController = {
       }
       
 
-    }
+    },
 
+    singleBook:async(req:Request,res:Response,next:NextFunction)=>{
+      try{
+        const bookID:string = req.params.id;
+
+        // Find the book by it's id in database 
+        const book = await Books.findById(bookID);
+
+        if(!book){
+          return next(createHttpError(404,"Book doesn't exists!"))
+        }
+
+        res.json(book);
+
+      }catch(err){
+        console.error("Error occured while getting book",err);
+        next(createHttpError(500,"Error occured while getting book"))
+      }
+
+    },
+
+    listBook:async(req:Request,res:Response,next:NextFunction)=>{
+
+      try{
+          const books = await Books.find();
+          res.json(books)
+
+      }catch(err){
+        console.error("Error occured while getting books",err);
+        next(createHttpError(500,"Error occured while getting books"))
+      }
+    }
 }
 
 export default booksController;

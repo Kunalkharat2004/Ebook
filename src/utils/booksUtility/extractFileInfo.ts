@@ -1,7 +1,6 @@
 import path from "path";
 
 const extractFileInfo = (files: {[fieldname: string]: Express.Multer.File[]},fieldName:string,folder:string)=>{
-    console.log(files);
 
     const fileName = files[fieldName][0].filename;
     const fileFormat = files[fieldName][0].mimetype.split("/").at(-1) as string;

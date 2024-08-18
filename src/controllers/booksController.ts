@@ -160,7 +160,63 @@ const booksController = {
         console.error("Error occured while getting books",err);
         next(createHttpError(500,"Error occured while getting books"))
       }
-    }
+    },
+
+    deleteBook:async(req:Request,res:Response,next:NextFunction)=>{
+
+      try{
+        const bookID = req.params.id;
+        const book = await Books.findById(bookID);
+
+        if(!book){
+          return next(createHttpError(404,"Book doesn't exists"));
+        }
+        const _req = req as AuthRequest
+        if(_req.userID !== book.author.toString()){
+          return next(createHttpError(403,"Not have permission to delete book"))
+        }
+
+        
+        // Delete the coverImage from cloudinary
+        try{
+            const coverImageSplit = book.coverImage.split("/").slice(-2);
+            const coverImageID = coverImageSplit.at(-2)+"/"+(coverImageSplit.at(-1)?.split(".").at(-2))
+            await cloudinary.uploader.destroy(coverImageID);
+        }catch(err){
+              console.error("Error occured while deleting the coverImage",err);
+             return next(createHttpError(500,"Error occured while deleting the coverImage"))
+        }
+
+        
+        // Delete the file from cloudinary
+        try{
+           const FileSplit = book.file.split("/").slice(-2);
+           const FileID = FileSplit.at(-2)+"/"+(FileSplit.at(-1))
+          await cloudinary.uploader.destroy(FileID,{
+            resource_type:"raw"
+          });
+      }catch(err){
+            console.error("Error occured while deleting the pdf file",err);
+           return next(createHttpError(500,"Error occured while deleting pdf file"))
+      }
+
+      // Delete books from database
+      try{
+          await Books.findByIdAndDelete(bookID)
+      }catch(err){
+        console.error("Error occured while deleting book from database",err);
+        return next(createHttpError(500,"Error occured while deleting book from database"))
+      }
+
+        return res.sendStatus(204);
+        
+      }catch(err){
+        console.error("Error occured while deleting book",err);
+        next(createHttpError(500,"Error occured while deleting book"))
+      }
+
+        
+    } 
 }
 
 export default booksController;

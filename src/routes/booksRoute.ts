@@ -34,4 +34,11 @@ router.get("/:id",booksController.singleBook)
 // Get list of books
 router.get("/",booksController.listBook);
 
+// Delete a book
+router.delete(
+  "/:id",
+  authentication,
+  booksController.deleteBook
+);
+
 export default router;

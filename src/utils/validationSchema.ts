@@ -1,6 +1,14 @@
-import { checkSchema } from 'express-validator';
+import { check, checkSchema } from 'express-validator';
 
 const validateUserCredentials = checkSchema({
+  name:{
+    notEmpty:{
+      errorMessage:"Name should not be empty"
+    },
+    isString: {
+      errorMessage: "Name must be a valid string",
+    }
+  },
   email: {
     notEmpty: {
       errorMessage: "Email should not be empty",
@@ -44,4 +52,27 @@ const validateUserCredentials = checkSchema({
   },
 });
 
-export { validateUserCredentials };
+const validateUserUpdateCredentials = checkSchema({
+  name:{
+    isString:{
+      errorMessage:"Name must be a valid string"
+    }
+  },
+  email:{
+    isEmail: {
+      errorMessage: "Email must be a valid email",
+    }
+  },
+  oldPassword:{
+    isString:{
+      errorMessage:"Name must be a valid string"
+    }
+  },
+  newPassword:{
+    isString:{
+      errorMessage:"Name must be a valid string"
+    }
+  }
+})
+
+export { validateUserCredentials,validateUserUpdateCredentials };

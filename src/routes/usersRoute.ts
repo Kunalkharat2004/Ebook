@@ -1,6 +1,6 @@
 import {Router} from "express"
 import {userController} from "../controllers/usersController"
-import {validateUserCredentials} from "../utils/validationSchema"
+import {validateUserCredentials, validateUserUpdateCredentials} from "../utils/validationSchema"
 import validateRequest from "../middlewares/validateRequest"
 
 const router = Router()
@@ -16,4 +16,10 @@ router.post(
     "/login",
     userController.loginUser
 )
+
+// Update user
+router.put("/:id",
+    validateUserUpdateCredentials,
+    validateRequest,
+    userController.updateUser);
 export default router

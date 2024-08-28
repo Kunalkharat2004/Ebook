@@ -8,6 +8,7 @@ const storeBookInDB = async (
   req: Request,
   next: NextFunction,
   title: string,
+  description:string,
   genre: string,
   coverImage: string,
   file: string
@@ -16,6 +17,7 @@ const storeBookInDB = async (
     const _req = req as AuthRequest;
     const newBook = new Books({
       title,
+      description,
       genre,
       coverImage,
       file,

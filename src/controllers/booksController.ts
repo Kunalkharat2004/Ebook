@@ -11,7 +11,7 @@ const booksController = {
 
     createBook:async(req:Request,res:Response,next:NextFunction)=>{
       // console.log(req.files);
-      const {genre,title} = req.body;
+      const {genre,title,description} = req.body;
       
       try{
 
@@ -27,7 +27,7 @@ const booksController = {
        const bookUploadResult = await uploadFileToCloudinary(bookInfo.filePath,bookInfo.fileName,bookInfo.fileFormat,bookInfo.folder);
        
         // Store books information in database
-        const newBook = await storeBookInDB(req,next,title,genre,coverImgUploadResult.secure_url,bookUploadResult.secure_url);
+        const newBook = await storeBookInDB(req,next,title,description,genre,coverImgUploadResult.secure_url,bookUploadResult.secure_url);
 
             res.status(201).json({
               "_id":newBook._id
@@ -135,12 +135,11 @@ const booksController = {
         const bookID:string = req.params.id;
 
         // Find the book by it's id in database 
-        const book = await Books.findById(bookID);
+        const book = await Books.findById(bookID).populate("author","name");;
 
         if(!book){
           return next(createHttpError(404,"Book doesn't exists!"))
         }
-
         res.json(book);
 
       }catch(err){
@@ -152,8 +151,9 @@ const booksController = {
 
     listBook:async(req:Request,res:Response,next:NextFunction)=>{
 
+      // const sleep = await new Promise((resolve)=>setTimeout(resolve,50000))
       try{
-          const books = await Books.find();
+          const books = await Books.find().populate("author","name");
           res.json(books)
 
       }catch(err){
